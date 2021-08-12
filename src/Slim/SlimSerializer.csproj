@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFrameworks>net5.0;net452;netstandard2.1</TargetFrameworks>
 		<AutoGenerateBindingRedirects></AutoGenerateBindingRedirects>
-		<Authors>wkirschenmann</Authors>
+		<Authors></Authors>
 		<Company>ANEO</Company>
 		<Description>This project implements the SlimSerializer extracted from Azos (https://github.com/azist/azos) and allow for inter runtime (.Net 4.5.1 vs .Net Core 2.0) serialized data exchange.</Description>
 		<Copyright>ANEO</Copyright>
