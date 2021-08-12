@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net5.0;net452;netstandard2.1</TargetFrameworks>
+		<AutoGenerateBindingRedirects></AutoGenerateBindingRedirects>
+		<Authors>wkirschenmann</Authors>
+		<Company>ANEO</Company>
+		<Description>This project implements the SlimSerializer extracted from Azos (https://github.com/azist/azos) and allow for inter runtime (.Net 4.5.1 vs .Net Core 2.0) serialized data exchange.</Description>
+		<Copyright>ANEO</Copyright>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<RepositoryUrl>https://github.com/wkirschenmann/SlimSerializerXRT</RepositoryUrl>
+		<RepositoryType>GIT</RepositoryType>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisMode>AllEnabledByDefault</AnalysisMode>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<WarningLevel>5</WarningLevel>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>SlimStrongNameKey.snk</AssemblyOriginatorKeyFile>
+		<DelaySign>false</DelaySign>
+		<NeutralLanguage />
+	
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<Optimize>true</Optimize>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<!--<PackageReference Include="StrongNamer" Version="0.2.5" />-->
+	</ItemGroup>
+
+</Project>

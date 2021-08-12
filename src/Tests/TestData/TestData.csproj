@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net451;net5.0</TargetFrameworks>
+    <AutoGenerateBindingRedirects></AutoGenerateBindingRedirects>
+    <Authors>wkirschenmann</Authors>
+    <Company>ANEO</Company>
+    <Description>Contains data used to test the SlimSerializer</Description>
+    <Copyright>ANEO</Copyright>
+    <RepositoryUrl>https://github.com/wkirschenmann/SlimSerializerXRT</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <WarningLevel>5</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+</Project>
