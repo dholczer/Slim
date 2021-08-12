@@ -27,7 +27,7 @@ jobs:
 
       - name: Build Solution
         run: |
-          msbuild.exe src/SlimSerializer.slnn /p:platform="Any CPU" /p:configuration="Release"
+          msbuild.exe src/SlimSerializer.sln /p:platform="Any CPU" /p:configuration="Release"
          # Publish
       - name: publish on version change
         id: publish_nuget
