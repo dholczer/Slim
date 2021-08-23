@@ -1,5 +1,5 @@
 /*<FILE_LICENSE>
- * See the LICENSE file in the project root for more information.
+* See the LICENSE file in the project root for more information.
 </FILE_LICENSE>*/
 
 using System;
@@ -98,7 +98,7 @@ namespace Slim.Core
         /// </summary>
         public static MetaHandle InlineValueType(VarIntStr? inlinedValueType)
         {
-            var result = new MetaHandle(InlinedRefTypeHandle, true)
+            var result = new MetaHandle(InlinedValueTypeHandle, true)
             {
                 m_Metadata = inlinedValueType
             };
@@ -122,7 +122,7 @@ namespace Slim.Core
         /// </summary>
         public static MetaHandle InlineTypeValue(VarIntStr? inlinedTypeValue)
         {
-            var result = new MetaHandle(InlinedRefTypeHandle, true)
+            var result = new MetaHandle(InlinedTypeValHandle, true)
             {
                 m_Metadata = inlinedTypeValue
             };
