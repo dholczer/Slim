@@ -1,5 +1,5 @@
 /*<FILE_LICENSE>
-* See the LICENSE file in the project root for more information.
+ * See the LICENSE file in the project root for more information.
 </FILE_LICENSE>*/
 
 using System;
@@ -16,16 +16,16 @@ namespace Slim.Core
     /// Check "IsInlinedValueType" is set to true when a struct/valuetype is inlined and "Metadata" contains type spec
     /// </summary>
     [Serializable]
-    public struct MetaHandle : IEquatable<MetaHandle>
+    internal struct MetaHandle : IEquatable<MetaHandle>
     {
-        public const int InlinedStringHandle = 0;
-        public const int InlinedValueTypeHandle = 1;
-        public const int InlinedRefTypeHandle = 2;
-        public const int InlinedTypeValHandle = 3;
-        public const int HandleOffset = 4;
+        internal const int InlinedStringHandle = 0;
+        internal const int InlinedValueTypeHandle = 1;
+        internal const int InlinedRefTypeHandle = 2;
+        internal const int InlinedTypeValHandle = 3;
+        internal const int HandleOffset = 4;
 
 
-        public int HandleRawValue { get; }
+        internal int HandleRawValue { get; }
         private VarIntStr? m_Metadata;
 
 
@@ -74,7 +74,7 @@ namespace Slim.Core
             m_Metadata = metadata;
         }
 
-        public MetaHandle(bool serializer, int handle, VarIntStr? metadata)
+        internal MetaHandle(bool serializer, int handle, VarIntStr? metadata)
         {
             HandleRawValue = handle + (serializer ? 0 : HandleOffset);
             m_Metadata = metadata;
@@ -98,7 +98,7 @@ namespace Slim.Core
         /// </summary>
         public static MetaHandle InlineValueType(VarIntStr? inlinedValueType)
         {
-            var result = new MetaHandle(InlinedValueTypeHandle, true)
+            var result = new MetaHandle(InlinedRefTypeHandle, true)
             {
                 m_Metadata = inlinedValueType
             };
@@ -122,7 +122,7 @@ namespace Slim.Core
         /// </summary>
         public static MetaHandle InlineTypeValue(VarIntStr? inlinedTypeValue)
         {
-            var result = new MetaHandle(InlinedTypeValHandle, true)
+            var result = new MetaHandle(InlinedRefTypeHandle, true)
             {
                 m_Metadata = inlinedTypeValue
             };
