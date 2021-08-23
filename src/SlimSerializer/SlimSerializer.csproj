@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net5.0;net452;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>net5.0;net452;netstandard2.1;netstandard1.2</TargetFrameworks>
 		<AutoGenerateBindingRedirects></AutoGenerateBindingRedirects>
 		<Authors></Authors>
 		<Company>ANEO</Company>
 		<Description>This project implements the SlimSerializer extracted from Azos (https://github.com/azist/azos) and allow for inter runtime (.Net 4.5.1 vs .Net Core 2.0) serialized data exchange.</Description>
 		<Copyright>ANEO</Copyright>
 		<PackageLicenseFile>LICENSE</PackageLicenseFile>
-		<RepositoryUrl>https://github.com/wkirschenmann/SlimSerializerXRT</RepositoryUrl>
+		<RepositoryUrl></RepositoryUrl>
 		<RepositoryType>GIT</RepositoryType>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
@@ -17,8 +17,8 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<WarningLevel>5</WarningLevel>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<AssemblyVersion>1.0.1.0</AssemblyVersion>
-		<FileVersion>1.0.1.0</FileVersion>
+		<AssemblyVersion>2.0.0.0</AssemblyVersion>
+		<FileVersion>2.0.0.0</FileVersion>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>SlimStrongNameKey.snk</AssemblyOriginatorKeyFile>
 		<DelaySign>false</DelaySign>
@@ -43,7 +43,7 @@
 
 	<PropertyGroup>
 		<PackageId></PackageId>
-		<Version>1.0.1.0</Version>
+		<Version>2.0.0.0</Version>
 		<Authors>ANEO</Authors>
 		<Company>ANEO</Company>
 	</PropertyGroup>
