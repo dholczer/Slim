@@ -3,17 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Emit;
-using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+
 namespace Slim.Core
 {
     /// <summary>
     /// Type descriptor dynamically compiles serialization/deserialization expressions for a particular type
     /// </summary>
-    public class TypeDescriptor
+    internal class TypeDescriptor
     {
-        private delegate void MemberUpdater(ref object source, object value);
         public TypeDescriptor(TypeSchema schema, Type type)
         {
             if (Attribute.IsDefined(type, typeof(SlimSerializationProhibitedAttribute)))
@@ -98,7 +96,6 @@ namespace Slim.Core
 
             if (Deserialize != null)
             {
-
                 Deserialize(Schema, reader, registry, refs, ref instance, streamingContext);
             }
             else
@@ -317,10 +314,6 @@ namespace Slim.Core
         private static void WalkArrayWrite(Array arr, Action<object> each) => SerializationUtils.WalkArrayWrite(arr, each);
         private static void WalkArrayRead<T>(Array arr, Func<T> each) => SerializationUtils.WalkArrayRead<T>(arr, each);
 
-        private bool IsNullableType()
-        {
-            return Type != null && Type.IsGenericType && Type.GetGenericTypeDefinition() == typeof(Nullable<>);
-        }
 
         private DynDeserialize MakeDeserialize()
         {
@@ -414,39 +407,21 @@ namespace Slim.Core
 
                     if (Format.IsTypeSupported(t))
                     {
-
                         expr = Expression.Assign(
                           assignmentTargetExpression,
                           Expression.Call(pReader, Format.GetReadMethodForType(t))
                         );
-
                     }
                     else
                     if (t.IsEnum)
                     {
-
                         expr = Expression.Assign(
                           assignmentTargetExpression,
                           Expression.Convert(
                             Expression.Call(pReader, Format.GetReadMethodForType(typeof(int))),
                             field.FieldType
                           )
-
                         );
-
-
-                    }
-                    else if (t.GetType() == typeof(bool?))
-                    {
-                        expr = Expression.Assign(
-                          assignmentTargetExpression,
-                          Expression.Convert(
-                            Expression.Call(pReader, Format.GetReadMethodForType(typeof(bool?))),
-                            field.FieldType
-                          )
-
-                        );
-
                     }
                     else // complex type ->  struct or reference
                     {
@@ -484,42 +459,8 @@ namespace Slim.Core
 
                     if (assignmentTargetExpression is ParameterExpression expression)//readonly fields
                     {
-                        if (Type.IsValueType && IsNullableType(Type)) //nullable type hack
+                        if (Type.IsValueType)//20150405DKh added
                         {
-                            var vBoxed = Expression.Variable(typeof(object), "vBoxed");
-                            var box = Expression.Assign(vBoxed, Expression.TypeAs(instance, typeof(object)));//box the value type
-
-                            var updater = GetFieldWriterForValueType(field);
-                            if (updater == null)
-                                throw new ArgumentException($"cannot deserialize field : {field}");
-                            var valueVar = Expression.Variable(typeof(object), "value");
-                            var updaterVar = Expression.Variable(typeof(MemberUpdater), "updater");
-                            var method = typeof(TypeDescriptor).GetMethod("CallMemberUpdater", BindingFlags.NonPublic | BindingFlags.Static, null,
-                                            CallingConventions.Any,
-                                            new Type[] { typeof(MemberUpdater), typeof(object).MakeByRefType(), typeof(object) },
-                                            null);
-                            var setField = Expression.Block(
-                                                new[] { updaterVar, vBoxed, valueVar }
-                                                , Expression.Assign(updaterVar, Expression.Constant(updater))
-                                                , Expression.Assign(valueVar, Expression.Convert(assignmentTargetExpression, typeof(object)))
-                                                , Expression.Call(
-                                                   method,
-                                                   updaterVar, vBoxed, valueVar
-                                            ));
-                            var swap = Expression.Assign(instance, Expression.Unbox(vBoxed, Type));
-                            expressions.Add(
-                              Expression.Block
-                              (new[] { expression, vBoxed },
-                                box,
-                                expr,
-                                setField,
-                                swap
-                              )
-                            );
-                        }
-                        else if (Type.IsValueType)//20150405DKh added
-                        {
-
                             var vBoxed = Expression.Variable(typeof(object), "vBoxed");
                             var box = Expression.Assign(vBoxed, Expression.TypeAs(instance, typeof(object)));//box the value type
                             var setField = Expression.Call(Expression.Constant(field),
@@ -537,7 +478,6 @@ namespace Slim.Core
                                 swap
                               )
                             );
-
                         }
                         else
                         {
@@ -549,7 +489,6 @@ namespace Slim.Core
                             );
                             expressions.Add(Expression.Block(new[] { expression }, expr, setField));
                         }
-
                     }
                     else
                         expressions.Add(expr);
@@ -560,56 +499,7 @@ namespace Slim.Core
             expressions.Add(Expression.Assign(pInstance, Expression.Convert(instance, typeof(object))));
 
             var body = Expression.Block(new[] { instance }, expressions);
-            var expCompil = Expression.Lambda<DynDeserialize>(body, pSchema, pReader, pTReg, pRefs, pInstance, pStreamingContext);
-            return expCompil.Compile();
-        }
-
-
-        private static MemberUpdater GetFieldWriterForValueType(FieldInfo field)
-        {
-            var dynamicMethod = new DynamicMethod(
-                name: "Set" + field.Name,
-                returnType: null,
-                parameterTypes: new[] { typeof(object).MakeByRefType(), typeof(object) },
-                m: field.DeclaringType.Module,
-                skipVisibility: true
-            );
-
-            var gen = dynamicMethod.GetILGenerator();
-
-            // var typedSource = (T)source;
-            var typedSource = gen.DeclareLocal(field.DeclaringType);
-            gen.Emit(OpCodes.Ldarg_0);
-            gen.Emit(OpCodes.Ldind_Ref);
-            gen.Emit(OpCodes.Unbox_Any, field.DeclaringType);
-            gen.Emit(OpCodes.Stloc_0);
-
-            // typedSource.Id = (TField)id;
-            gen.Emit(OpCodes.Ldloca_S, typedSource);
-            gen.Emit(OpCodes.Ldarg_1);
-            gen.Emit(OpCodes.Unbox_Any, field.FieldType);
-            gen.Emit(OpCodes.Stfld, field);
-
-            // source = typedSource;
-            gen.Emit(OpCodes.Ldarg_0);
-            gen.Emit(OpCodes.Ldloc_0);
-            gen.Emit(OpCodes.Box, field.DeclaringType);
-            gen.Emit(OpCodes.Stind_Ref);
-            gen.Emit(OpCodes.Ret);
-
-            return (MemberUpdater)dynamicMethod.CreateDelegate(typeof(MemberUpdater));
-        }
-
-
-        private static void CallMemberUpdater(MemberUpdater memberUpdater, ref object source, object value)
-        {
-            memberUpdater(ref source, value);
-        }
-
-        private static bool IsNullableType(Type type)
-        {
-            return type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-
+            return Expression.Lambda<DynDeserialize>(body, pSchema, pReader, pTReg, pRefs, pInstance, pStreamingContext).Compile();
         }
     }
 }
